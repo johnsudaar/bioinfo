@@ -80,7 +80,7 @@ public class RepliconParserManager {
 		Bdd db = null;
 		try {
 			db = retryer.call(this.parser);
-		} catch (ExecutionException | RetryException e) {
+		} catch (Exception e) {
 			UIManager.log("[RepliconParserManager] Unable to download "+this.organism.getName()+ " replicon: "+replicon);
 		}
 		if(db == null){

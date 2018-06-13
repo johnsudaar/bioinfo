@@ -28,10 +28,10 @@ public class Organism implements Serializable {
 	private ArrayList<String> processed_replicons;
 	
 	public Organism(String kingdom, String group, String subgroup, String name, String bioproject, String creation_date, String modification_date){
-		this.kingdom = kingdom.replace("/", "_").replace(" ", "_");
-		this.group = group.replace("/", "_").replace(" ", "_");
-		this.subgroup = subgroup.replace("/", "_").replace(" ", "_");
-		this.name = name.replace("/", "_").replace(" ", "_");
+		this.kingdom = kingdom.replace("/", "_").replace(" ", "_").replace(":", "_");
+		this.group = group.replace("/", "_").replace(" ", "_").replace(":", "_");
+		this.subgroup = subgroup.replace("/", "_").replace(" ", "_").replace(":", "_");
+		this.name = name.replace("/", "_").replace(" ", "_").replace(":", "_");
 		this.bioproject = bioproject;
 		this.creation_date = creation_date;
 		this.modification_date = modification_date;
@@ -129,7 +129,7 @@ public class Organism implements Serializable {
 	}
 
 	public void setKingdom(String kingdom) {
-		this.kingdom = kingdom.replace("/", "_").replace(" ", "_");
+		this.kingdom = kingdom.replace("/", "_").replace(" ", "_").replace(":", "_");
 	}
 
 	public String getGroup() {
@@ -137,7 +137,7 @@ public class Organism implements Serializable {
 	}
 
 	public void setGroup(String group) {
-		this.group = group.replace("/", "_").replace(" ", "_");
+		this.group = group.replace("/", "_").replace(" ", "_").replace(":", "_");
 	}
 
 	public String getSubgroup() {
@@ -145,7 +145,7 @@ public class Organism implements Serializable {
 	}
 
 	public void setSubgroup(String subgroup) {
-		this.subgroup = subgroup.replace("/", "_").replace(" ", "_");
+		this.subgroup = subgroup.replace("/", "_").replace(" ", "_").replace(":", "_");
 	}
 
 	public String getName() {
@@ -153,7 +153,7 @@ public class Organism implements Serializable {
 	}
 
 	public void setName(String name) {
-		this.name = name.replace("/", "_").replace(" ", "_");
+		this.name = name.replace("/", "_").replace(" ", "_").replace(":", "_");
 	}
 
 	public String getBioproject() {

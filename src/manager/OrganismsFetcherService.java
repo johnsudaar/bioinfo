@@ -80,6 +80,7 @@ public class OrganismsFetcherService extends AbstractExecutionThreadService {
 		Bdd maindb;
 		ArrayList<String> processedReplicons = this.readProcessed(o);
 		String dbPath = o.getPath()+Configuration.FOLDER_SEPARATOR+o.getName();
+		Set<String> repliconsTodo = o.getReplicons().keySet();
 		if(processedReplicons == null) {
 			maindb = new Bdd();
 		} else {
@@ -88,39 +89,47 @@ public class OrganismsFetcherService extends AbstractExecutionThreadService {
 			} catch (IOException e) {
 				maindb = new Bdd();
 			}
-			o.removeReplicons(processedReplicons);
+			repliconsTodo.removeAll(processedReplicons);
+			for(String replicon : processedReplicons){
+				o.addProcessedReplicon(replicon);
+			}
+			UIManager.addProgress(processedReplicons.size());
 		}
-						
-		for(String replicon : o.getReplicons().keySet()){
+		
+		if(repliconsTodo.size() == 0 ){
+			UIManager.log("[Organism fetcher "+this.id+"] Skipping ...");
+		}else{
+			for(String replicon : repliconsTodo){
+				try{
+					RepliconParserManager manager = new RepliconParserManager(o, replicon, maindb);
+					manager.run();
+				}catch(Exception e){
+					UIManager.log("[Organism fetcher" +this.id+"] Error while processing request.");
+					e.printStackTrace();
+				}
+			}
+				
+			this.writeProcessed(o);
+			
+			try {
+				maindb.exportBase(dbPath);
+			} catch (IOException e) {
+				UIManager.log("[Organism fetcher "+this.id+"] Cannot write db file : "+o.getName()+" : "+dbPath);
+			}
+			
+			String[] chemin=new String[4];
+			chemin[0]=o.getKingdom();
+			chemin[1]=o.getGroup();
+			chemin[2]=o.getSubgroup();
+			chemin[3]=o.getName();
+			
+			UIManager.log("Writing Excel file for : "+o.getName());
 			try{
-				RepliconParserManager manager = new RepliconParserManager(o, replicon, maindb);
-				manager.run();
+				ExcelWriter.writer(o.getPath(),o.getPath()+Configuration.FOLDER_SEPARATOR+o.getName(), chemin, maindb, true);
 			}catch(Exception e){
-				UIManager.log("[Organism fetcher" +this.id+"] Error while processing request.");
+				UIManager.log("Error while writing excel file for : "+o.getName());
 				e.printStackTrace();
 			}
-		}
-			
-		this.writeProcessed(o);
-		
-		try {
-			maindb.exportBase(dbPath);
-		} catch (IOException e) {
-			UIManager.log("[Organism fetcher "+this.id+"] Cannot write db file : "+o.getName()+" : "+dbPath);
-		}
-		
-		String[] chemin=new String[4];
-		chemin[0]=o.getKingdom();
-		chemin[1]=o.getGroup();
-		chemin[2]=o.getSubgroup();
-		chemin[3]=o.getName();
-		
-		UIManager.log("Writing Excel file for : "+o.getName());
-		try{
-			ExcelWriter.writer(o.getPath(),o.getPath()+Configuration.FOLDER_SEPARATOR+o.getName(), chemin, maindb, true);
-		}catch(Exception e){
-			UIManager.log("Error while writing excel file for : "+o.getName());
-			e.printStackTrace();
 		}
 		
 		UIManager.log("[Organism fetcher "+this.id+"] Done with organism : "+o.getName());

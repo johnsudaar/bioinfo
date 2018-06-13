@@ -12,6 +12,7 @@ public class UIManager {
 	private static int max_progress;
 	private static int current_progress = 0;
 	private static Lock progressLock = new ReentrantLock();
+	private static Lock logLock = new ReentrantLock();
 
 	
 	private static UIConsole console;
@@ -38,12 +39,14 @@ public class UIManager {
 	}
 	
 	public static void log(String message){
+		logLock.lock();
 		UIManager.check();
 		if(Configuration.USE_GUI){
 			UIManager.graphics.log(message);
 		}else {
 			UIManager.console.log(message);
 		}
+		logLock.unlock();
 	}
 	
 	public static void setProgress(double progress){
